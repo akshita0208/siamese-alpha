@@ -19,7 +19,16 @@ def make_oneshot_task(N, s="val", language=None):
         categories = rng.choice(range(n_classes),size=(N,),replace=False)            
     
     true_category = categories[0]
-   
+    ex1, ex2 = rng.choice(n_examples,replace=False,size=(2,))
+    test_image = np.asarray([X[true_category,ex1,:,:]]*N).reshape(N, w, h,1)
+    support_set = X[categories,indices,:,:]
+    support_set[0,:,:] = X[true_category,ex2]
+    support_set = support_set.reshape(N, w, h,1)
+    targets = np.zeros((N,))
+    targets[0] = 1
+    targets, test_image, support_set = shuffle(targets, test_image, support_set)
+    pairs = [test_image,support_set]
+    return pairs, targets
 
   
   def test_oneshot(model, N, k, s = "val", verbose = 0):
